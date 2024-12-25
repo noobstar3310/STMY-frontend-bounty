@@ -1,15 +1,14 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { ChevronRight } from 'lucide-react'
-import Image from "next/image"
-import Link from "next/link"
+import { Card, CardContent } from "@/app/components/ui/card";
+import { ChevronRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 interface RoundCardProps {
-  title: string
-  tag: string
-  description: string
-  matchingPool: string
-  currency: string
-  href: string
+  title: string;
+  tag: string;
+  description: string;
+  matchingPool: string;
+  href: string;
 }
 
 export function RoundCard({
@@ -17,8 +16,7 @@ export function RoundCard({
   tag,
   description,
   matchingPool,
-  currency,
-  href
+  href,
 }: RoundCardProps) {
   return (
     <Link href={href}>
@@ -32,7 +30,6 @@ export function RoundCard({
               </h3>
               <div className="text-sm tracking-wide text-gray-400">{tag}</div>
             </div>
-            
           </div>
 
           {/* Description */}
@@ -44,16 +41,17 @@ export function RoundCard({
           <div className="flex items-center justify-between border-t border-white/5 pt-4">
             <div>
               <div className="text-xs text-gray-500">Matching Pool</div>
-              <div className="font-mono text-lg font-medium text-white">
-                {matchingPool}
-                {/* <span className="ml-1 text-xs text-gray-400">{currency}</span> */}
-                <span className="ml-1 text-xs text-gray-400"><Image
+              <div className="flex items-center gap-2">
+                <div className="font-mono text-lg font-medium text-white">
+                  {matchingPool}
+                </div>
+                <Image
                   src="/Solana-Logo.png"
-                  alt="Logo"
+                  alt="Solana"
                   width={50}
                   height={50}
-                //   className="object-contain"
-                /></span>
+                  className="object-contain"
+                />
               </div>
             </div>
             <ChevronRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-0.5" />
@@ -61,5 +59,5 @@ export function RoundCard({
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }
