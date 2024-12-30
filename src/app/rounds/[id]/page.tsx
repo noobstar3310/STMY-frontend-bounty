@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
@@ -9,9 +9,16 @@ import { Button } from "@/app/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 
 export default function ProjectDetails({ params }: { params: { id: string } }) {
-  const { connected } = useWallet();
+  const { connection } = useConnection();
+  const { connected, publicKey, sendTransaction } = useWallet();
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,17 +31,17 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
     longDescription: `Our mission is to accelerate the development of robust developer tools for the Web3 ecosystem. We believe that by improving the developer experience, we can significantly reduce barriers to entry and increase the quality of blockchain applications.
 
 Key Focus Areas:
-• Smart Contract Development Tools
-• Testing and Debugging Frameworks
-• Security Analysis Tools
-• Developer Documentation
-• Integration Tools and SDKs
+* Smart Contract Development Tools
+* Testing and Debugging Frameworks
+* Security Analysis Tools
+* Developer Documentation
+* Integration Tools and SDKs
 
 Impact Metrics:
-• Number of active developers using the tools
-• Reduction in development time
-• Security vulnerabilities prevented
-• Community engagement and contributions`,
+* Number of active developers using the tools
+* Reduction in development time
+* Security vulnerabilities prevented
+* Community engagement and contributions`,
     matchingPool: "300,000",
     raised: "125,000",
     contributors: 89,
@@ -43,8 +50,27 @@ Impact Metrics:
 
   const handleContribute = async () => {
     setIsLoading(true);
-    // Implement Solana transaction logic here
+    transferSOL(amount);
     setTimeout(() => setIsLoading(false), 2000);
+  };
+
+  const transferSOL = async (amount: string) => {
+    if (!publicKey) return;
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: new PublicKey("G92fJwBhYMUYp22aMkccBfyvhFEeXY5BevrEUA45AHqJ"),
+        lamports: LAMPORTS_PER_SOL * parseFloat(amount),
+      })
+    );
+    try {
+      const signature = await sendTransaction(transaction, connection);
+      await connection.confirmTransaction(signature, "confirmed");
+      return signature;
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      throw error;
+    }
   };
 
   return (
@@ -136,7 +162,7 @@ Impact Metrics:
                       placeholder="0.0"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="border-white/10 bg-white/5 font-mono"
+                      className="border-white/10 text-white bg-white/5 font-mono"
                     />
                   </div>
 
